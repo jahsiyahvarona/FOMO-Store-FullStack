@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<!--
+  Name: jahsiyah varona
+  Date: 02.24.2025
+  CSC 372
+
+  This is the index.html page for the FOMO online store.
+  It displays the home page with a splash section, search field,
+  and dynamically loads search results using the Fetch API.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FOMO - Home</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles/styles.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg bg-fomo">
+    <div class="container">
+      <a class="navbar-brand mx-auto" href="index.html">
+        <img src="images/FOMO_logo.png" alt="FOMO Logo" class="logo-img">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarNav" aria-controls="navbarNav"
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link text-white" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="products.html">Products</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="cart.html">Cart</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="#">Sign In</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="#">Admin</a></li>
+          <li class="nav-item"><a class="nav-link" href="admin-upload.html">Bulk Upload</a></li>
+          <li class="nav-item"><a class="nav-link" href="admin-products.html">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="index.html">Sign Out</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container my-5">
+    <div class="row align-items-center">
+      <!-- Splash Text -->
+      <div class="col-md-6">
+        <h1 class="display-4">Welcome to FOMO!</h1>
+        <p class="lead">Wear the future with premium crypto-themed merchandise.</p>
+        <p>Our exclusive collection is designed for crypto enthusiasts who want to express their passion.
+           From bold t-shirts to stylish hoodies and accessories, show off your love for blockchain and digital currencies.</p>
+        <a href="products.html" class="btn btn-lg btn-fomo">Shop Now</a>
+      </div>
+      <!-- Hero Image -->
+      <div class="col-md-6">
+        <img src="images/FOMO_logo.png" alt="Crypto Merch" class="img-fluid">
+      </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="row my-5">
+      <div class="col-md-8 offset-md-2">
+        <form id="searchForm" class="d-flex">
+          <input id="searchInput" class="form-control me-2" type="search" placeholder="Search for Crypto Merch"
+                 name="search-term" aria-label="Search">
+          <button class="btn btn-fomo" type="submit">Go</button>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Dynamic Search Results Container -->
+    <section id="searchResults" class="my-4">
+      <!-- Dynamic search results (as cards) will appear here -->
+    </section>
+
+    <!-- Featured Item Section -->
+    <section class="featured-item my-5">
+      <h2 class="mb-4 text-center">Featured Item</h2>
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <img src="images/FOMO_tee/Front.png" alt="FOMO T-Shirt" class="img-fluid rounded">
+        </div>
+        <div class="col-md-6">
+          <h3>FOMO T-Shirt</h3>
+          <p class="lead text-warning">$24.99</p>
+          <p>Experience the premium quality of our FOMO T-Shirt—designed for crypto enthusiasts who love to stand out.</p>
+          <a href="details.html?product=fomo-tee" class="btn btn-fomo">View Details</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer-custom">
+    <p class="mb-0">&copy; 2025 FOMO. All rights reserved.</p>
+  </footer>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Inline Script for Dynamic Search on Home Page -->
+  <script>
+    document.getElementById("searchForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const searchTerm = document.getElementById("searchInput").value.trim();
+      const resultsContainer = document.getElementById("searchResults");
+      resultsContainer.innerHTML = ''; // Clear previous results
+
+      if (searchTerm === "") {
+        resultsContainer.innerHTML = "<p>Please enter a search term.</p>";
+        return;
+      }
+      
+      // Fetch matching products (id, name, image_url) from backend search endpoint
+      fetch(`/api/products/search?search-term=${encodeURIComponent(searchTerm)}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.length === 0) {
+            resultsContainer.innerHTML = "<p>No results found.</p>";
+          } else {
+            const resultRow = document.createElement("div");
+            resultRow.classList.add("row", "g-3");
+            data.forEach(item => {
+              const col = document.createElement("div");
+              col.classList.add("col", "col-md-4");
+              col.innerHTML = `
+                <div class="card h-100">
+                  <img src="${item.image_url}" class="card-img-top" alt="${item.name}">
+                  <div class="card-body">
+                    <h5 class="card-title">${item.name}</h5>
+                    <a href="details.html?product=${encodeURIComponent(item.id)}" class="btn btn-fomo mt-2">View Details</a>
+                  </div>
+                </div>
+              `;
+              resultRow.appendChild(col);
+            });
+            resultsContainer.appendChild(resultRow);
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching search results:", error);
+          resultsContainer.innerHTML = "<p>Error fetching search results.</p>";
+        });
+    });
+  </script>
+</body>
+</html>

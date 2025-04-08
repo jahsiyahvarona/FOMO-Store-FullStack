@@ -1,0 +1,26 @@
+{
+  "name": "fomo-store-fullstack",
+  "version": "1.0.0",
+  "description": "A full-stack online store web application for the CSC372 term project. This repository contains front-end prototypes, backend APIs, and database integration to support e-commerce functionality.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jahsiyahvarona/FOMO-Store-FullStack.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/jahsiyahvarona/FOMO-Store-FullStack/issues"
+  },
+  "homepage": "https://github.com/jahsiyahvarona/FOMO-Store-FullStack#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "multer": "^1.4.5-lts.2",
+    "sqlite3": "^5.1.7"
+  }
+}

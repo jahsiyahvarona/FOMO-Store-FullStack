@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<!--
+  Name: jahsiyah varona
+  Date: 02.24.2025
+  CSC 372
+
+  This is the products.html page for the FOMO online store.
+  It dynamically displays a list of available products and allows filtering by search term and category.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FOMO - Products</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles/styles.css" />
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg bg-fomo">
+    <div class="container">
+      <a class="navbar-brand mx-auto" href="index.html">
+        <img src="images/FOMO_logo.png" alt="FOMO Logo" class="logo-img">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link text-white" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="products.html">Products</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="cart.html">Cart</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="#">Sign In</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="#">Admin</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container my-5">
+    <h2 class="mb-4">Our Crypto Merch Collection</h2>
+    
+    <!-- Filter Section -->
+    <div class="row mb-4">
+      <div class="col-md-8 offset-md-2">
+        <form id="filterForm" class="d-flex">
+          <input id="productSearchInput" class="form-control me-2" type="text" placeholder="Search for product"
+                 name="search-term" aria-label="Search">
+          <select id="categorySelect" class="form-select me-2">
+            <option value="">All Categories</option>
+            <option value="Apparel">Apparel</option>
+            <option value="Accessories">Accessories</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Home & Living">Home & Living</option>
+          </select>
+          <button class="btn btn-fomo" type="submit">Filter</button>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Dynamic Products Container -->
+    <div id="productsContainer" class="row row-cols-1 row-cols-md-3 g-4">
+      <!-- Product cards will be dynamically loaded here -->
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer-custom">
+    <p class="mb-0">&copy; 2025 FOMO. All rights reserved.</p>
+  </footer>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Function to load products dynamically based on search and filter
+    function loadFilteredProducts() {
+      const searchTerm = document.getElementById("productSearchInput").value.trim();
+      const category = document.getElementById("categorySelect").value;
+      const queryParams = new URLSearchParams();
+      if (searchTerm !== "") {
+        queryParams.append("search-term", searchTerm);
+      }
+      if (category !== "") {
+        queryParams.append("category", category);
+      }
+      fetch(`/api/products/search?${queryParams.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+          const container = document.getElementById("productsContainer");
+          container.innerHTML = '';
+          if (data.length === 0) {
+            container.innerHTML = "<p class='text-center'>No products found.</p>";
+          } else {
+            data.forEach(product => {
+              const col = document.createElement("div");
+              col.className = "col";
+              col.innerHTML = `
+                <div class="card h-100">
+                  <img src="${product.image_url}" class="card-img-top" alt="${product.name}">
+                  <div class="card-body">
+                    <h5 class="card-title">${product.name}</h5>
+                    <p class="card-text text-warning">$${product.price}</p>
+                    <a href="details.html?product=${encodeURIComponent(product.id)}" class="btn btn-fomo">View Details</a>
+                  </div>
+                </div>
+              `;
+              container.appendChild(col);
+            });
+          }
+        })
+        .catch(err => {
+          console.error("Error fetching products:", err);
+          document.getElementById("productsContainer").innerHTML = "<p class='text-center'>Error loading products.</p>";
+        });
+    }
+
+    // Attach event listener for filter form submission
+    document.getElementById("filterForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      loadFilteredProducts();
+    });
+
+    // Optionally, load products on page load without filter
+    document.addEventListener("DOMContentLoaded", loadFilteredProducts);
+  </script>
+</body>
+</html>
